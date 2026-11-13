@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Enterprise Helpdesk Hub (Standalone Demo)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --header-bg:#04070c;
+  --primary:#1d4ed8;
+  --primary-hover:#2563eb;
+  --bg:#06090e;
+  --card:#0b121e;
+  --surface:#101b2d;
+  --bd:#1c2d47;
+  --bd-strong:#294166;
+  --tx:#e6edf7;
+  --mu:#8a9cb8;
+  --red:#ef4444;
+  --grn:#10b981;
+  --amber:#f59e0b;
+  --rotech-wm:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='180' viewBox='0 0 320 180'%3E%3Cg transform='rotate(-22 160 90)'%3E%3Ctext x='20' y='95' font-family='IBM Plex Mono, monospace' font-weight='700' font-size='28' letter-spacing='6' fill='%231d4ed8' fill-opacity='0.065'%3EROTECH%3C/text%3E%3Cline x1='20' y1='106' x2='185' y2='106' stroke='%232563eb' stroke-opacity='0.06' stroke-width='1.5'/%3E%3C/g%3E%3C/svg%3E");
+  box-sizing:border-box;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background-color:var(--bg);
+  background-image:
+    var(--rotech-wm),
+    radial-gradient(circle at 50% 0%, rgba(29, 78, 216, 0.14) 0%, transparent 65%);
+  background-repeat:repeat, no-repeat;
+  background-attachment:fixed;
+  color:var(--tx);
+  font-size:13.5px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+header{
+  background:linear-gradient(90deg, #030508 0%, #091326 50%, #030508 100%);
+  color:#f1f5f9;
+  padding:14px 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:12px;
+  border-bottom:1px solid var(--bd-strong);
+}
+header h1{margin:0;font-size:17px;font-weight:700;letter-spacing:0.01em;display:flex;align-items:center;gap:10px}
+header h1::after{
+  content:'ROTECH';
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:0.14em;
+  padding:2px 7px;
+  border-radius:4px;
+  background:rgba(29,78,216,0.22);
+  border:1px solid rgba(59,130,246,0.45);
+  color:#93c5fd;
+}
+.badge{padding:2px 8px;border-radius:4px;font-size:10.5px;text-transform:uppercase;font-weight:600;letter-spacing:0.04em}
+.badge-admin{background:#1e3a8a;color:#bfdbfe;border:1px solid #3b82f6}
+.badge-agent{background:#0f172a;color:#cbd5e1;border:1px solid #334155}
+nav{
+  display:flex;
+  gap:4px;
+  padding:14px 24px 0;
+  max-width:1240px;
+  margin:auto;
+  flex-wrap:wrap;
+  border-bottom:1px solid var(--bd);
+}
+nav button{
+  background:transparent;
+  color:var(--mu);
+  border:1px solid transparent;
+  border-bottom:none;
+  padding:9px 15px;
+  border-radius:6px 6px 0 0;
+  cursor:pointer;
+  font-weight:600;
+  font-size:13px;
+  margin-bottom:-1px;
+  transition:color 0.15s, background 0.15s;
+}
+nav button:hover{color:var(--tx);background:rgba(29,78,216,0.08)}
+nav button.on{
+  background:var(--card);
+  color:#60a5fa;
+  border-color:var(--bd);
+  border-top:2px solid #2563eb;
+  border-bottom-color:var(--card);
+}
+.sub{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.sub button{
+  background:var(--surface);
+  color:var(--mu);
+  border:1px solid var(--bd);
+  padding:7px 13px;
+  border-radius:5px;
+  cursor:pointer;
+  font-weight:600;
+  font-size:12px;
+}
+.sub button:hover{color:var(--tx);border-color:var(--bd-strong)}
+.sub button.on{background:var(--primary);color:#fff;border-color:#3b82f6}
+main{max-width:1240px;margin:18px auto;padding:0 24px 40px}
+.panel{
+  background:rgba(11, 18, 30, 0.94);
+  border:1px solid var(--bd);
+  border-radius:8px;
+  padding:22px;
+  margin-bottom:16px;
+}
+h2{font-size:16px;font-weight:700;margin:0 0 14px;color:#f8fafc}
+h3{font-size:13.5px;font-weight:700;margin:20px 0 10px;color:#cbd5e1;padding-bottom:6px;border-bottom:1px solid var(--bd)}
+label{display:block;font-size:12px;font-weight:600;margin:0 0 5px;color:#cbd5e1}
+input,select,textarea{
+  width:100%;
+  padding:8px 10px;
+  border:1px solid var(--bd-strong);
+  border-radius:5px;
+  background:#070c14;
+  color:var(--tx);
+  font:inherit;
+}
+input:focus,select:focus,textarea:focus{outline:2px solid rgba(37,99,235,0.35);border-color:#3b82f6}
+textarea{min-height:76px;resize:vertical}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:12px 14px;margin-bottom:12px}
+button{border:0;border-radius:5px;padding:8px 14px;font-weight:600;cursor:pointer;font:inherit}
+.p{background:var(--primary);color:#fff;border:1px solid #2563eb}
+.p:hover{background:var(--primary-hover)}
+.s{background:var(--surface);color:var(--tx);border:1px solid var(--bd)}
+.s:hover{border-color:#3b82f6;background:#15243b}
+.d{background:transparent;color:#f87171;border:1px solid #dc2626}
+.d:hover{background:rgba(220,38,38,0.14)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.mu{color:var(--mu);font-size:12px}.err{color:#f87171;font-weight:600;margin-top:8px}.ok{color:#34d399;font-weight:600}
+.tw{overflow-x:auto;border:1px solid var(--bd);border-radius:6px}
+table{border-collapse:collapse;width:100%;min-width:720px;font-size:12.5px}
+th,td{padding:9px 12px;border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap}
+th{background:var(--surface);font-weight:600;color:#93c5fd;font-size:11.5px;text-transform:uppercase;letter-spacing:0.03em}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(29,78,216,0.08)}
+td b{font-family:'IBM Plex Mono',monospace;font-size:12px;color:#93c5fd}
+.tag{padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;background:var(--surface);border:1px solid var(--bd);display:inline-block}
+.tag-red{background:rgba(220,38,38,0.16);color:#fca5a5;border-color:rgba(239,68,68,0.4)}
+.tag-grn{background:rgba(16,185,129,0.16);color:#6ee7b7;border-color:rgba(16,185,129,0.4)}
+.tag-amber{background:rgba(245,158,11,0.16);color:#fcd34d;border-color:rgba(245,158,11,0.4)}
+.hide{display:none!important}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:12px;margin-bottom:18px}
+.kpi-card{
+  background:#080e18;
+  border:1px solid var(--bd);
+  border-left:3px solid #2563eb;
+  border-radius:6px;
+  padding:14px 16px;
+}
+.kpi-title{font-size:11.5px;color:var(--mu);font-weight:600;text-transform:uppercase;letter-spacing:0.04em}
+.kpi-val{font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:600;margin-top:6px;color:#f8fafc}
+.kpi-sub{font-size:11px;color:var(--mu);margin-top:3px}
+.header-right{display:flex;align-items:center;gap:10px}
+header .s{background:#0e1726;color:#e2e8f0;border:1px solid #1e3252}
+header .s:hover{background:#16243b;border-color:#3b82f6}
+#loginModal{
+  position:fixed;
+  inset:0;
+  background-color:rgba(4,7,12,0.92);
+  background-image:var(--rotech-wm);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+.login-box{background:var(--card);border:1px solid var(--bd-strong);border-top:3px solid #2563eb;border-radius:8px;padding:26px;width:350px}
+.auth-hint{background:#070c14;padding:10px 12px;border-radius:5px;font-size:11.5px;color:var(--mu);margin-top:14px;border:1px solid var(--bd)}
+details{border:1px solid var(--bd);border-radius:6px;padding:10px 14px;margin-bottom:8px;background:#080e18}summary{cursor:pointer;font-weight:600;color:#93c5fd}
+</style>
+</head>
+<body>
+
+<div id="loginModal">
+  <div class="login-box">
+    <h2 style="margin-top:0">Helpdesk Sign-In</h2>
+    <div style="margin-bottom:10px">
+      <label>Username</label>
+      <input id="loginUsername" placeholder="e.g. admin or remo" autocomplete="username">
+    </div>
+    <div style="margin-bottom:14px">
+      <label>Password</label>
+      <input id="loginPassword" type="password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="p" id="btnLogin" style="width:100%">Sign In</button>
+    <div id="loginErr" class="err"></div>
+    <div class="auth-hint">
+      <b>Demo Credentials (Local Simulation):</b><br>
+      • Admin: <code>admin</code> / <code>admin123</code><br>
+      • User/Agent: <code>remo</code> / <code>agent123</code>
+    </div>
+  </div>
+</div>
+
+<header>
+  <h1>Enterprise Helpdesk Tracker</h1>
+  <div class="header-right">
+    <div id="userBadge"></div>
+    <button class="s" id="btnResetDemo" style="padding:6px 10px;font-size:11px" title="Reset sample data">Reset Demo Data</button>
+    <button class="s" id="btnLogout" style="padding:6px 10px;font-size:11px">Sign Out</button>
+  </div>
+</header>
+
+<nav id="nav">
+  <button data-t="agentDash" class="on">Agent Dashboard</button>
+  <button data-t="log">Log / Update Case</button>
+  <button data-t="queue">Ticket Queue</button>
+  <button data-t="lib">Use-Case Library</button>
+  <button data-t="admin" id="adminNavTab" class="hide">Admin Console</button>
+</nav>
+
+<main>
+  <section id="t-agentDash" class="panel">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <h2>Agent Workspace</h2>
+      <button class="p" id="btnQuickLog">+ Create New Ticket</button>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-title">My Active Cases</div><div class="kpi-val" id="kpi-act">-</div><div class="kpi-sub">Open &amp; Pending</div></div>
+      <div class="kpi-card"><div class="kpi-title">My Escalations</div><div class="kpi-val" id="kpi-esc" style="color:var(--red)">-</div><div class="kpi-sub">Needs Attention</div></div>
+      <div class="kpi-card"><div class="kpi-title">Closed Today</div><div class="kpi-val" id="kpi-cls" style="color:var(--grn)">-</div><div class="kpi-sub">Resolved</div></div>
+      <div class="kpi-card"><div class="kpi-title">Avg CSAT Rating</div><div class="kpi-val" id="kpi-csat">-</div><div class="kpi-sub">Score out of 5</div></div>
+      <div class="kpi-card"><div class="kpi-title">Avg Handling Time</div><div class="kpi-val" id="kpi-hrs">-</div><div class="kpi-sub">Hours to Resolve</div></div>
+    </div>
+    <h3>Urgent / Escalated Cases</h3>
+    <div class="tw"><table style="margin-bottom:16px"><thead><tr><th>Case ID</th><th>User</th><th>Use Case</th><th>Queue</th><th>Status</th><th>Opened</th><th></th></tr></thead><tbody id="agentEscBody"></tbody></table></div>
+    <h3>My Assigned Queue</h3>
+    <div class="tw"><table><thead><tr><th>Case ID</th><th>Type</th><th>Use Case</th><th>User</th><th>Status</th><th>Queue</th><th>Opened</th><th></th></tr></thead><tbody id="agentQueueBody"></tbody></table></div>
+  </section>
+
+  <section id="t-log" class="panel hide">
+    <h2>Log or Update Case</h2>
+    <div class="g">
+      <div><label>Call Direction *</label><select id="dir"><option>Inbound</option><option>Outbound</option></select></div>
+      <div><label>Ticket Type *</label><select id="ttype"><option>New</option><option>Existing</option></select></div>
+      <div><label>Case ID *</label><input id="cid" placeholder="e.g. 75670"></div>
+      <div><label>Queue *</label><select id="queue"></select></div>
+      <div id="ownBox" class="hide"><label>Assigned Agent (Admin Only)</label><select id="own"></select></div>
+    </div>
+    <h3>End-User Information</h3>
+    <div class="g">
+      <div><label>User Name *</label><input id="uname" placeholder="Full name"></div>
+      <div><label>Employee ID / Email</label><input id="uid" placeholder="e.g. EMP1029"></div>
+      <div><label>Contact Phone</label><input id="uph" placeholder="+91..."></div>
+      <div><label>Location / Dept</label><input id="uloc" placeholder="e.g. Coimbatore ODC"></div>
+    </div>
+    <h3>Use Case &amp; SOP Execution</h3>
+    <div class="g"><div><label>Use Case *</label><select id="uc"></select></div></div>
+    <div id="tips" class="mu"></div>
+    <div id="steps" style="margin:10px 0"></div>
+    <h3>Timestamps &amp; Resolution Status</h3>
+    <div class="g">
+      <div><label>Opened Date/Time *</label><input type="datetime-local" id="openAt"></div>
+      <div><label>Status *</label><select id="status"><option>Open</option><option>Pending</option><option>Closed</option></select></div>
+      <div id="closeBox" class="hide"><label>Closed Date/Time *</label><input type="datetime-local" id="closeAt"></div>
+      <div><label>Escalated?</label><select id="esc"><option>No</option><option>Yes</option></select></div>
+    </div>
+    <div id="csatBox" class="g hide">
+      <div><label>CSAT Rating (1-5)</label><select id="csat"><option value="">Not Provided</option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select></div>
+      <div><label>User Feedback Comment</label><input id="csatc" placeholder="Optional comments"></div>
+    </div>
+    <h3>Case Transfer</h3>
+    <label style="font-weight:400"><input type="checkbox" id="tr"> Transfer this case to another agent or tier</label>
+    <div id="trBox" class="g hide" style="margin-top:8px">
+      <div><label>Transfer To (Agent)</label><select id="trTo"></select></div>
+      <div><label>Transfer Queue</label><select id="trQ"></select></div>
+      <div><label>Transfer Reason *</label><input id="trWhy" placeholder="Reason for escalation/handoff"></div>
+    </div>
+    <h3>Documentation &amp; Summary</h3>
+    <div><label>Work Note</label><textarea id="note" placeholder="Internal log entry..."></textarea></div>
+    <div style="margin-top:8px"><label>Closure Summary</label><textarea id="sum" style="min-height:120px"></textarea></div>
+    <div class="row">
+      <button class="p" id="save">Save Case</button>
+      <button class="s" id="regen" type="button">Rebuild Summary</button>
+      <button class="s" id="copy" type="button">Copy Summary</button>
+      <button class="s" id="clear" type="button">Clear Form</button>
+    </div>
+    <div id="fmsg"></div>
+    <div id="hist" class="mu" style="margin-top:12px"></div>
+  </section>
+
+  <section id="t-queue" class="panel hide">
+    <h2>All Ticket Queue</h2>
+    <div class="g">
+      <div><label>Filter Status</label><select id="qs"><option>All</option><option>Open</option><option>Pending</option><option>Closed</option></select></div>
+      <div><label>Filter Agent</label><select id="qm"><option value="all">All Agents</option><option value="mine">Only Mine</option></select></div>
+      <div><label>Search Keyword</label><input id="qq" placeholder="Search Case ID, User, or Use Case"></div>
+    </div>
+    <div class="tw"><table><thead><tr><th>Case ID</th><th>Direction</th><th>Type</th><th>Use Case</th><th>User</th><th>Agent</th><th>Status</th><th>Opened</th><th>Closed</th><th>Transfers</th><th>Esc</th><th>Actions</th></tr></thead><tbody id="qb"></tbody></table></div>
+  </section>
+
+  <section id="t-lib" class="panel hide">
+    <h2>Use-Case &amp; SOP Library</h2>
+    <input id="ls" placeholder="Search standard operating procedures..." style="max-width:360px;margin-bottom:12px">
+    <div id="lb"></div>
+  </section>
+
+  <section id="t-admin" class="hide">
+    <div class="sub">
+      <button data-a="dash" class="on">Admin Overview</button>
+      <button data-a="team">Team Management</button>
+      <button data-a="qa">Quality Assurance</button>
+      <button data-a="uc">Manage SOPs</button>
+      <button data-a="queues">Manage Queues</button>
+    </div>
+
+    <div id="a-dash" class="panel">
+      <h2>Operations Executive Control Panel</h2>
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-title">Global Ticket Volume</div><div class="kpi-val" id="adm-tot">-</div><div class="kpi-sub" id="adm-dir">-</div></div>
+        <div class="kpi-card"><div class="kpi-title">Active Backlog</div><div class="kpi-val" id="adm-open" style="color:var(--amber)">-</div><div class="kpi-sub">Open + Pending</div></div>
+        <div class="kpi-card"><div class="kpi-title">Escalation Index</div><div class="kpi-val" id="adm-esc-rate" style="color:var(--red)">-</div><div class="kpi-sub" id="adm-esc-cnt">- cases</div></div>
+        <div class="kpi-card"><div class="kpi-title">Overall CSAT Avg</div><div class="kpi-val" id="adm-csat">-</div><div class="kpi-sub">Customer Satisfaction</div></div>
+        <div class="kpi-card"><div class="kpi-title">Helpdesk QA Score</div><div class="kpi-val" id="adm-qa">-</div><div class="kpi-sub">Audit Benchmark</div></div>
+      </div>
+      <div class="g" style="grid-template-columns:1fr 1fr;margin-top:14px">
+        <div>
+          <h3>Queue Backlog Distribution</h3>
+          <div class="tw"><table><thead><tr><th>Queue Tier</th><th>Active</th><th>Resolved</th></tr></thead><tbody id="admQueueBody"></tbody></table></div>
+        </div>
+        <div>
+          <h3>Pending QA Evaluations</h3>
+          <div class="tw"><table><thead><tr><th>Case ID</th><th>Agent</th><th>CSAT</th><th>Action</th></tr></thead><tbody id="admQaAlertBody"></tbody></table></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="a-team" class="panel hide">
+      <h2>Add or Update Team Member</h2>
+      <div class="g">
+        <div><label>Username *</label><input id="tmUser" placeholder="e.g. john_d"></div>
+        <div><label>Full Display Name *</label><input id="tmName" placeholder="e.g. John Doe"></div>
+        <div><label>Team Lead</label><input id="tmLead" placeholder="e.g. Sarah Connor"></div>
+        <div><label>Role</label><select id="tmRole"><option value="agent">Support Agent</option><option value="lead">Team Lead</option><option value="admin">Administrator</option></select></div>
+        <div><label>Account Status</label><select id="tmActive"><option value="true">Active</option><option value="false">Disabled</option></select></div>
+        <div><label>Password (New)</label><input id="tmPass" type="password" placeholder="e.g. welcome123"></div>
+      </div>
+      <div class="row"><button class="p" id="tmSave">Save Member</button></div>
+      <div id="tmMsg"></div>
+      <h3>Current Organization Roster</h3>
+      <div class="tw"><table><thead><tr><th>Username</th><th>Name</th><th>Role</th><th>Lead</th><th>Status</th></tr></thead><tbody id="tmListBody"></tbody></table></div>
+    </div>
+
+    <div id="a-qa" class="panel hide">
+      <h2>Quality Review Module</h2>
+      <div class="mu" style="margin-bottom:10px">Evaluate closed cases against standard compliance, call etiquette, and documentation accuracy (0–100 scale).</div>
+      <div class="tw"><table><thead><tr><th>Case ID</th><th>Agent</th><th>Use Case</th><th>Escalated</th><th>CSAT</th><th>Score (0-100)</th><th>Auditor Notes</th><th>Action</th></tr></thead><tbody id="qaTableBody"></tbody></table></div>
+    </div>
+
+    <div id="a-uc" class="panel hide">
+      <h2>Create or Modify SOP Use Case</h2>
+      <div class="g">
+        <div><label>Use Case Name *</label><input id="admUcN" placeholder="e.g. Laserfiche Access Setup"></div>
+        <div><label>Category</label><input id="admUcC" placeholder="e.g. Application Support"></div>
+        <div><label>Tips for Agents</label><input id="admUcT" placeholder="Crucial reminders"></div>
+      </div>
+      <div><label>Steps (One step per line) *</label><textarea id="admUcS" style="min-height:90px" placeholder="Step 1&#10;Step 2&#10;Step 3"></textarea></div>
+      <div class="row"><button class="p" id="admUcSave">Save SOP</button></div>
+      <div id="admUcMsg"></div>
+    </div>
+
+    <div id="a-queues" class="panel hide">
+      <h2>Manage Active Queues</h2>
+      <div class="mu">One queue name per line.</div>
+      <textarea id="admQueueList" style="min-height:120px"></textarea>
+      <div class="row"><button class="p" id="btnSaveQueues">Save Queue List</button></div>
+      <div id="queueMsg"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(()=>{
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const nowL=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,16);
+const fmt=s=>s?s.replace("T"," "):"-";
+const avg=a=>{a=a.filter(x=>x!=null&&!isNaN(x));return a.length?(a.reduce((p,c)=>p+c,0)/a.length):null};
+const f1=v=>v==null?"-":(Math.round(v*10)/10);
+
+const STORAGE_KEY = 'hd_standalone_db_v1';
+const SEED_DATA = {
+  users: [
+    { id: 'usr_admin', username: 'admin', name: 'System Admin', role: 'admin', password: 'admin123', active: true },
+    { id: 'usr_remo', username: 'remo', name: 'Remos A', role: 'agent', lead: 'Sarah Connor', password: 'agent123', active: true },
+    { id: 'usr_sarah', username: 'sarah', name: 'Sarah Connor', role: 'lead', lead: 'Operations Head', password: 'agent123', active: true },
+    { id: 'usr_john', username: 'john', name: 'John Doe', role: 'agent', lead: 'Sarah Connor', password: 'agent123', active: true }
+  ],
+  queues: ['L1 Support', 'L2 Support', 'Application', 'Infrastructure', 'Access / AD', 'Network', 'Others'],
+  usecases: [
+    {
+      id: 'password_reset',
+      name: 'AD / Domain Password Reset',
+      category: 'Access / AD',
+      steps: ['Verify caller identity via Employee ID and phone.', 'Locate Active Directory account in Admin Center.', 'Generate temporary password and enforce change at next logon.', 'Guide user to lock and unlock workstation with new credentials.'],
+      tips: 'Ensure 2FA phone confirmation is completed before resetting.',
+      template: 'Case {case_id} - Password Reset\nUser: {caller}\nSteps Taken:\n{steps}\nClosed by {agent} on {date}.'
+    },
+    {
+      id: 'vpn_failure',
+      name: 'Versa SASE / VPN Disconnected',
+      category: 'Network',
+      steps: ['Verify internet connectivity on endpoint.', 'Check Versa SASE service status in Windows Services.', 'Re-authenticate user token and certificates.', 'Verify route tables and flush DNS cache.'],
+      tips: 'Check if user is on hotspot or restricted guest Wi-Fi.',
+      template: 'Case {case_id} - SASE VPN Connection\nUser: {caller}\nSteps Taken:\n{steps}\nClosed by {agent} on {date}.'
+    }
+  ],
+  cases: [
+    {
+      id: '75661',
+      caseId: '75661',
+      dir: 'Inbound',
+      ttype: 'New',
+      queue: 'Access / AD',
+      uname: 'Alex Smith',
+      uid: 'EMP1004',
+      uph: '+91 9876543210',
+      uloc: 'Chennai Tech Center',
+      ucId: 'password_reset',
+      ucName: 'AD / Domain Password Reset',
+      stepsDone: ['Verify caller identity via Employee ID and phone.', 'Locate Active Directory account in Admin Center.'],
+      openAt: nowL(),
+      closeAt: '',
+      status: 'Open',
+      esc: 'Yes',
+      csat: '',
+      csatc: '',
+      summary: '',
+      agent: 'Remos A',
+      transfers: [],
+      history: [{ ts: nowL(), by: 'Remos A', note: 'Case created (Open)' }],
+      updatedAt: new Date().toISOString()
+    },
+    {
+      id: '75662',
+      caseId: '75662',
+      dir: 'Inbound',
+      ttype: 'Existing',
+      queue: 'Network',
+      uname: 'Emily Davis',
+      uid: 'EMP2041',
+      uph: '+91 9876543211',
+      uloc: 'Bangalore HQ',
+      ucId: 'vpn_failure',
+      ucName: 'Versa SASE / VPN Disconnected',
+      stepsDone: ['Verify internet connectivity on endpoint.', 'Check Versa SASE service status in Windows Services.', 'Re-authenticate user token and certificates.', 'Verify route tables and flush DNS cache.'],
+      openAt: nowL(),
+      closeAt: nowL(),
+      status: 'Closed',
+      esc: 'No',
+      csat: '5',
+      csatc: 'Great fast support!',
+      qa: { score: 95, notes: 'Followed all SOP steps cleanly.', by: 'System Admin', ts: nowL() },
+      summary: 'VPN resolved after DNS flush.',
+      agent: 'Remos A',
+      transfers: [],
+      history: [{ ts: nowL(), by: 'Remos A', note: 'Case created' }, { ts: nowL(), by: 'Remos A', note: 'Issue resolved (Closed)' }],
+      updatedAt: new Date().toISOString()
+    }
+  ]
+};
+
+function getDb() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(SEED_DATA));
+    return JSON.parse(JSON.stringify(SEED_DATA));
+  }
+  return JSON.parse(raw);
+}
+function saveDb(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+let currentUser = JSON.parse(sessionStorage.getItem('hd_session_user') || 'null');
+let STATE = getDb();
+let curCaseId = null, doneSteps = [], sumEdited = false;
+
+function login(username, password) {
+  $("#loginErr").textContent = '';
+  const db = getDb();
+  const user = db.users.find(u => u.username.toLowerCase() === (username || '').toLowerCase().trim());
+  if (!user || user.password !== password) {
+    $("#loginErr").textContent = 'Invalid username or password.';
+    return;
+  }
+  if (user.active === false) {
+    $("#loginErr").textContent = 'Account disabled. Contact administrator.';
+    return;
+  }
+  const { password: _, ...safeUser } = user;
+  currentUser = safeUser;
+  sessionStorage.setItem('hd_session_user', JSON.stringify(currentUser));
+  $("#loginModal").classList.add('hide');
+  bootstrap();
+}
+
+function logout() {
+  currentUser = null;
+  sessionStorage.removeItem('hd_session_user');
+  $("#loginModal").classList.remove('hide');
+}
+
+$("#btnLogin").onclick = () => login($("#loginUsername").value, $("#loginPassword").value);
+$("#btnLogout").onclick = logout;
+$("#btnResetDemo").onclick = () => {
+  if (confirm('Reset all demo tickets, users, and scores back to default?')) {
+    localStorage.removeItem(STORAGE_KEY);
+    STATE = getDb();
+    bootstrap();
+    alert('Demo data restored.');
+  }
+};
+
+function showTab(t) {
+  $$("main > section").forEach(s => s.classList.add('hide'));
+  $("#t-" + t).classList.remove('hide');
+  $$("#nav button").forEach(b => b.classList.toggle('on', b.dataset.t === t));
+  if (t === 'agentDash') renderAgentDashboard();
+  if (t === 'admin') renderAdminConsole();
+  if (t === 'queue') renderQueue();
+  if (t === 'lib') renderLibrary();
+}
+$("#nav").onclick = e => { if (e.target.dataset.t) showTab(e.target.dataset.t); };
+$(".sub").onclick = e => {
+  const a = e.target.dataset.a; if (!a) return;
+  $$(".sub button").forEach(b => b.classList.toggle('on', b === e.target));
+  ['dash', 'team', 'qa', 'uc', 'queues'].forEach(k => {
+    const el = $("#a-" + k);
+    if (el) el.classList.toggle('hide', k !== a);
+  });
+  renderAdminConsole();
+};
+$("#btnQuickLog").onclick = () => { clearForm(); showTab('log'); };
+
+function populateDropdowns() {
+  const qOptions = STATE.queues.map(q => `<option value="${esc(q)}">${esc(q)}</option>`).join('');
+  $("#queue").innerHTML = qOptions;
+  $("#trQ").innerHTML = '<option value="">Same Queue</option>' + qOptions;
+  $("#uc").innerHTML = '<option value="">Select SOP...</option>' + STATE.usecases.map(u => `<option value="${esc(u.id)}">${esc(u.name)}</option>`).join('');
+  const activeAgents = STATE.users.filter(t => t.active !== false);
+  $("#trTo").innerHTML = '<option value="">Choose Agent...</option>' + activeAgents.filter(t => t.name !== currentUser.name).map(t => `<option value="${esc(t.name)}">${esc(t.name)}</option>`).join('');
+  $("#own").innerHTML = '<option value="">Keep Original</option>' + activeAgents.map(t => `<option value="${esc(t.name)}">${esc(t.name)}</option>`).join('');
+}
+
+function renderAgentDashboard() {
+  if (!currentUser) return;
+  const myCases = STATE.cases.filter(c => c.agent === currentUser.name);
+  const active = myCases.filter(c => c.status !== 'Closed');
+  const escalations = active.filter(c => c.esc === 'Yes');
+  const today = new Date().toISOString().slice(0, 10);
+  const closedToday = myCases.filter(c => c.status === 'Closed' && (c.closeAt || '').startsWith(today));
+  const myClosed = myCases.filter(c => c.status === 'Closed');
+  const myAvgCsat = avg(myClosed.map(c => c.csat ? +c.csat : null));
+  const myAvgHrs = avg(myClosed.map(c => c.closeAt && c.openAt ? (new Date(c.closeAt) - new Date(c.openAt))/36e5 : null));
+
+  $("#kpi-act").textContent = active.length;
+  $("#kpi-esc").textContent = escalations.length;
+  $("#kpi-cls").textContent = closedToday.length;
+  $("#kpi-csat").textContent = f1(myAvgCsat);
+  $("#kpi-hrs").textContent = myAvgHrs != null ? f1(myAvgHrs) + 'h' : '-';
+
+  $("#agentEscBody").innerHTML = escalations.length ? escalations.map(c => `<tr>
+    <td><b>${esc(c.caseId)}</b></td>
+    <td>${esc(c.uname)}</td>
+    <td>${esc(c.ucName)}</td>
+    <td>${esc(c.queue)}</td>
+    <td><span class="tag tag-red">${esc(c.status)}</span></td>
+    <td>${esc(fmt(c.openAt))}</td>
+    <td><button class="s" data-open="${esc(c.id)}">Resolve</button></td>
+  </tr>`).join('') : '<tr><td colspan="7" class="mu">No active escalated cases. Great job!</td></tr>';
+
+  $("#agentQueueBody").innerHTML = active.length ? active.map(c => `<tr>
+    <td><b>${esc(c.caseId)}</b></td>
+    <td>${esc(c.ttype)}</td>
+    <td>${esc(c.ucName)}</td>
+    <td>${esc(c.uname)}</td>
+    <td><span class="tag tag-amber">${esc(c.status)}</span></td>
+    <td>${esc(c.queue)}</td>
+    <td>${esc(fmt(c.openAt))}</td>
+    <td><button class="s" data-open="${esc(c.id)}">Open</button></td>
+  </tr>`).join('') : '<tr><td colspan="8" class="mu">Your queue is clear.</td></tr>';
+}
+$("#agentEscBody").onclick = e => { if (e.target.dataset.open) loadCase(e.target.dataset.open); };
+$("#agentQueueBody").onclick = e => { if (e.target.dataset.open) loadCase(e.target.dataset.open); };
+
+function stepsUI() {
+  const uc = STATE.usecases.find(u => u.id === $("#uc").value);
+  $("#tips").textContent = uc && uc.tips ? 'SOP Tip: ' + uc.tips : '';
+  $("#steps").innerHTML = uc ? uc.steps.map((s, i) => `<label style="display:flex;gap:8px;align-items:center;margin:4px 0"><input type="checkbox" style="width:auto" data-idx="${i}" ${doneSteps.includes(s)?'checked':''}> <span>${i+1}. ${esc(s)}</span></label>`).join('') : '<span class="mu">Select an SOP above to view execution checklist.</span>';
+}
+$("#uc").onchange = () => { doneSteps = []; stepsUI(); autoSum(); };
+$("#steps").onchange = () => {
+  const uc = STATE.usecases.find(u => u.id === $("#uc").value);
+  if (!uc) return;
+  doneSteps = $$("#steps input:checked").map(el => uc.steps[+el.dataset.idx]);
+  autoSum();
+};
+
+const DEF_TEMPLATE = "Case {case_id} - {issue}\nDirection: {direction} | Type: {ticket_type}\nUser: {caller}\nSteps Completed:\n{steps}\nOutcome: Issue verified and resolved.\nHandled by {agent} on {date}.";
+function buildSummary() {
+  const uc = STATE.usecases.find(u => u.id === $("#uc").value) || {};
+  const tokens = {
+    case_id: $("#cid").value.trim(),
+    issue: uc.name || '',
+    direction: $("#dir").value,
+    ticket_type: $("#ttype").value,
+    caller: [$("#uname").value, $("#uid").value].filter(Boolean).join(' / '),
+    agent: currentUser ? currentUser.name : '',
+    date: ($("#closeAt").value || nowL()).replace('T', ' '),
+    steps: doneSteps.length ? doneSteps.map(s => '- ' + s).join('\n') : '- (Check checklist steps)'
+  };
+  let str = uc.template || DEF_TEMPLATE;
+  for (const k in tokens) str = str.split('{' + k + '}').join(tokens[k]);
+  return str;
+}
+function autoSum() { if (!sumEdited) $("#sum").value = buildSummary(); }
+$("#sum").oninput = () => sumEdited = true;
+$("#regen").onclick = () => { sumEdited = false; autoSum(); };
+["cid","uname","uid","dir","ttype","closeAt"].forEach(id => $("#" + id).addEventListener('input', autoSum));
+$("#copy").onclick = async () => {
+  try { await navigator.clipboard.writeText($("#sum").value); } catch { $("#sum").select(); document.execCommand("copy"); }
+  $("#fmsg").innerHTML = '<div class="ok">Summary copied to clipboard.</div>';
+};
+
+$("#status").onchange = () => {
+  const isClosed = $("#status").value === 'Closed';
+  $("#closeBox").classList.toggle('hide', !isClosed);
+  $("#csatBox").classList.toggle('hide', !isClosed);
+  if (isClosed && !$("#closeAt").value) $("#closeAt").value = nowL();
+  autoSum();
+};
+$("#tr").onchange = () => $("#trBox").classList.toggle('hide', !$("#tr").checked);
+
+function clearForm() {
+  curCaseId = null; doneSteps = []; sumEdited = false;
+  ["cid","uname","uid","uph","uloc","note","csatc","trWhy","closeAt"].forEach(id => $("#" + id).value = '');
+  $("#dir").value = 'Inbound'; $("#ttype").value = 'New'; $("#status").value = 'Open'; $("#esc").value = 'No'; $("#csat").value = '';
+  $("#tr").checked = false; $("#uc").value = ''; $("#openAt").value = nowL();
+  $("#status").onchange(); $("#tr").onchange(); stepsUI();
+  $("#sum").value = ''; $("#hist").innerHTML = ''; $("#fmsg").innerHTML = ''; $("#cid").disabled = false;
+}
+$("#clear").onclick = clearForm;
+
+function loadCase(id) {
+  const c = STATE.cases.find(x => x.id === id);
+  if (!c) return;
+  curCaseId = c.id; doneSteps = c.stepsDone || []; sumEdited = !!c.summary;
+  $("#cid").value = c.caseId; $("#cid").disabled = true;
+  $("#dir").value = c.dir; $("#ttype").value = 'Existing'; $("#queue").value = c.queue;
+  $("#uname").value = c.uname || ''; $("#uid").value = c.uid || ''; $("#uph").value = c.uph || ''; $("#uloc").value = c.uloc || '';
+  $("#uc").value = c.ucId || ''; $("#openAt").value = c.openAt || ''; $("#status").value = c.status; $("#closeAt").value = c.closeAt || '';
+  $("#esc").value = c.esc || 'No'; $("#csat").value = c.csat || ''; $("#csatc").value = c.csatc || ''; $("#note").value = '';
+  $("#tr").checked = false; $("#status").onchange(); $("#tr").onchange(); stepsUI();
+  $("#sum").value = c.summary || buildSummary();
+  $("#hist").innerHTML = '<b>History Log:</b><br>' + (c.history || []).slice().reverse().map(h => `${esc(fmt(h.ts))} · ${esc(h.by)} · ${esc(h.note)}`).join('<br>');
+  showTab('log');
+  window.scrollTo(0, 0);
+}
+
+$("#save").onclick = () => {
+  const cid = $("#cid").value.trim();
+  const uname = $("#uname").value.trim();
+  const ucId = $("#uc").value;
+  const status = $("#status").value;
+
+  if (!cid || !uname || !ucId) {
+    $("#fmsg").innerHTML = '<div class="err">Required: Case ID, User Name, and Use Case.</div>';
+    return;
+  }
+  const uc = STATE.usecases.find(u => u.id === ucId) || {};
+  const db = getDb();
+  const idx = db.cases.findIndex(c => c.id === cid);
+  const existing = idx >= 0 ? db.cases[idx] : null;
+  const ts = nowL();
+
+  let assignedAgent = existing ? existing.agent : currentUser.name;
+  if (currentUser.role === 'admin' && $("#own").value) assignedAgent = $("#own").value;
+
+  let assignedQueue = $("#queue").value;
+  const transfers = existing ? (existing.transfers || []) : [];
+  const history = existing ? (existing.history || []) : [];
+  history.push({ ts, by: currentUser.name, note: $("#note").value.trim() || (existing ? `Updated (${status})` : `Case created (${status})`) });
+
+  if ($("#tr").checked) {
+    const trTo = $("#trTo").value;
+    const trQ = $("#trQ").value;
+    const trWhy = $("#trWhy").value.trim() || 'Transferred';
+    transfers.push({ ts, from: assignedAgent, to: trTo, queue: trQ, why: trWhy });
+    if (trTo) assignedAgent = trTo;
+    if (trQ) assignedQueue = trQ;
+    history.push({ ts, by: currentUser.name, note: `Transferred to ${trTo || trQ}: ${trWhy}` });
+  }
+
+  const record = {
+    ...(existing || {}),
+    id: cid,
+    caseId: cid,
+    dir: $("#dir").value,
+    ttype: existing ? existing.ttype : $("#ttype").value,
+    queue: assignedQueue,
+    uname,
+    uid: $("#uid").value.trim(),
+    uph: $("#uph").value.trim(),
+    uloc: $("#uloc").value.trim(),
+    ucId,
+    ucName: uc.name || '',
+    stepsDone: doneSteps,
+    openAt: $("#openAt").value,
+    status,
+    closeAt: status === 'Closed' ? $("#closeAt").value : '',
+    esc: $("#esc").value,
+    csat: status === 'Closed' ? $("#csat").value : '',
+    csatc: $("#csatc").value.trim(),
+    summary: $("#sum").value,
+    agent: assignedAgent,
+    transfers,
+    history,
+    updatedAt: new Date().toISOString()
+  };
+
+  if (idx >= 0) db.cases[idx] = record;
+  else db.cases.unshift(record);
+
+  saveDb(db);
+  STATE = db;
+  clearForm();
+  showTab('agentDash');
+};
+
+function renderQueue() {
+  const st = $("#qs").value, mine = $("#qm").value === 'mine', q = $("#qq").value.toLowerCase();
+  const filtered = STATE.cases.filter(c => {
+    return (st === 'All' || c.status === st) &&
+           (!mine || c.agent === currentUser.name) &&
+           (!q || [c.caseId, c.uname, c.ucName, c.queue].join(' ').toLowerCase().includes(q));
+  }).sort((a,b) => (b.updatedAt||'').localeCompare(a.updatedAt||''));
+
+  $("#qb").innerHTML = filtered.length ? filtered.map(c => `<tr>
+    <td><b>${esc(c.caseId)}</b></td>
+    <td>${esc(c.dir)}</td>
+    <td>${esc(c.ttype)}</td>
+    <td>${esc(c.ucName)}</td>
+    <td>${esc(c.uname)}</td>
+    <td>${esc(c.agent)}</td>
+    <td><span class="tag ${c.status==='Closed'?'tag-grn':'tag-amber'}">${esc(c.status)}</span></td>
+    <td>${esc(fmt(c.openAt))}</td>
+    <td>${esc(fmt(c.closeAt))}</td>
+    <td>${(c.transfers||[]).length}</td>
+    <td>${c.esc === 'Yes' ? '<span class="tag tag-red">Yes</span>' : 'No'}</td>
+    <td>
+      <button class="s" data-open="${esc(c.id)}">Open</button>
+      ${currentUser.role === 'admin' ? `<button class="d" data-del="${esc(c.id)}">Delete</button>` : ''}
+    </td>
+  </tr>`).join('') : '<tr><td colspan="12" class="mu">No matching tickets found.</td></tr>';
+}
+$("#qb").onclick = e => {
+  if (e.target.dataset.open) loadCase(e.target.dataset.open);
+  if (e.target.dataset.del) {
+    if (confirm('Permanently delete ticket #' + e.target.dataset.del + '?')) {
+      const db = getDb();
+      db.cases = db.cases.filter(c => c.id !== e.target.dataset.del);
+      saveDb(db);
+      STATE = db;
+      renderQueue();
+    }
+  }
+};
+["qs","qm"].forEach(id => $("#" + id).onchange = renderQueue);
+$("#qq").oninput = renderQueue;
+
+function renderLibrary() {
+  const s = $("#ls").value.toLowerCase();
+  const list = STATE.usecases.filter(u => !s || (u.name + u.category + u.steps.join(' ')).toLowerCase().includes(s));
+  $("#lb").innerHTML = list.map(u => `<details>
+    <summary>${esc(u.name)} <span class="mu">(${esc(u.category)})</span></summary>
+    ${u.tips ? `<p class="mu">Tip: ${esc(u.tips)}</p>` : ''}
+    <ol>${u.steps.map(st => `<li>${esc(st)}</li>`).join('')}</ol>
+  </details>`).join('');
+}
+$("#ls").oninput = renderLibrary;
+
+function renderAdminConsole() {
+  if (currentUser.role !== 'admin') return;
+  const tot = STATE.cases.length;
+  const inb = STATE.cases.filter(c => c.dir === 'Inbound').length;
+  const outb = STATE.cases.filter(c => c.dir === 'Outbound').length;
+  const openCases = STATE.cases.filter(c => c.status !== 'Closed').length;
+  const escCnt = STATE.cases.filter(c => c.esc === 'Yes').length;
+  const escRate = tot ? Math.round((escCnt / tot) * 100) : 0;
+  const closed = STATE.cases.filter(c => c.status === 'Closed');
+  const globalCsat = avg(closed.map(c => c.csat ? +c.csat : null));
+  const globalQa = avg(closed.map(c => c.qa ? c.qa.score : null));
+
+  $("#adm-tot").textContent = tot;
+  $("#adm-dir").textContent = `${inb} Inbound · ${outb} Outbound`;
+  $("#adm-open").textContent = openCases;
+  $("#adm-esc-rate").textContent = escRate + '%';
+  $("#adm-esc-cnt").textContent = `${escCnt} escalated`;
+  $("#adm-csat").textContent = f1(globalCsat);
+  $("#adm-qa").textContent = globalQa != null ? f1(globalQa) + '/100' : '-';
+
+  const qMap = {};
+  STATE.queues.forEach(q => qMap[q] = { act: 0, cls: 0 });
+  STATE.cases.forEach(c => {
+    const q = c.queue || 'Others';
+    if (!qMap[q]) qMap[q] = { act: 0, cls: 0 };
+    if (c.status === 'Closed') qMap[q].cls++; else qMap[q].act++;
+  });
+  $("#admQueueBody").innerHTML = Object.keys(qMap).map(k => `<tr>
+    <td><b>${esc(k)}</b></td>
+    <td>${qMap[k].act ? `<span class="tag tag-amber">${qMap[k].act}</span>` : '0'}</td>
+    <td>${qMap[k].cls}</td>
+  </tr>`).join('');
+
+  const pendingQa = closed.filter(c => !c.qa).slice(0, 8);
+  $("#admQaAlertBody").innerHTML = pendingQa.length ? pendingQa.map(c => `<tr>
+    <td><b>${esc(c.caseId)}</b></td>
+    <td>${esc(c.agent)}</td>
+    <td>${esc(c.csat || '-')}</td>
+    <td><button class="s" data-qa-goto="${esc(c.id)}">Audit</button></td>
+  </tr>`).join('') : '<tr><td colspan="4" class="mu">No pending QA evaluations.</td></tr>';
+
+  $("#qaTableBody").innerHTML = closed.map(c => `<tr>
+    <td><b>${esc(c.caseId)}</b></td>
+    <td>${esc(c.agent)}</td>
+    <td>${esc(c.ucName)}</td>
+    <td>${c.esc === 'Yes' ? '<span class="tag tag-red">Yes</span>' : 'No'}</td>
+    <td>${esc(c.csat || '-')}</td>
+    <td><input type="number" min="0" max="100" class="qa-sc" style="width:75px" value="${c.qa ? c.qa.score : ''}"></td>
+    <td><input class="qa-nt" style="min-width:180px" value="${esc(c.qa ? c.qa.notes : '')}"></td>
+    <td><button class="p" data-qa-save="${esc(c.id)}">Score</button></td>
+  </tr>`).join('') || '<tr><td colspan="8" class="mu">No closed cases for audit.</td></tr>';
+
+  $("#tmListBody").innerHTML = STATE.users.map(t => `<tr>
+    <td><b>${esc(t.username)}</b></td>
+    <td>${esc(t.name)}</td>
+    <td><span class="badge ${t.role==='admin'?'badge-admin':'badge-agent'}">${esc(t.role)}</span></td>
+    <td>${esc(t.lead || '-')}</td>
+    <td>${t.active !== false ? '<span class="tag tag-grn">Active</span>' : '<span class="tag tag-red">Disabled</span>'}</td>
+  </tr>`).join('');
+
+  $("#admQueueList").value = STATE.queues.join('\n');
+}
+
+$("#admQaAlertBody").onclick = e => {
+  if (e.target.dataset.qaGoto) {
+    $$(".sub button").forEach(b => b.classList.toggle('on', b.dataset.a === 'qa'));
+    ['dash', 'team', 'qa', 'uc', 'queues'].forEach(k => $("#a-" + k).classList.toggle('hide', k !== 'qa'));
+  }
+};
+
+$("#qaTableBody").onclick = e => {
+  const id = e.target.dataset.qaSave;
+  if (!id) return;
+  const row = e.target.closest('tr');
+  const score = row.querySelector('.qa-sc').value;
+  const notes = row.querySelector('.qa-nt').value;
+  if (score === '' || +score < 0 || +score > 100) return alert('Enter a score between 0 and 100.');
+  const db = getDb();
+  const c = db.cases.find(x => x.id === id);
+  if (c) {
+    c.qa = { score: +score, notes, by: currentUser.name, ts: nowL() };
+    saveDb(db);
+    STATE = db;
+    renderAdminConsole();
+  }
+};
+
+$("#tmSave").onclick = () => {
+  const username = $("#tmUser").value.trim();
+  const name = $("#tmName").value.trim();
+  if (!username || !name) return alert('Username and Name are required.');
+  const db = getDb();
+  const idx = db.users.findIndex(u => u.username.toLowerCase() === username.toLowerCase());
+  const userObj = {
+    id: 'usr_' + username.toLowerCase(),
+    username,
+    name,
+    lead: $("#tmLead").value.trim(),
+    role: $("#tmRole").value,
+    active: $("#tmActive").value === 'true',
+    password: $("#tmPass").value.trim() || (idx >= 0 ? db.users[idx].password : 'welcome123')
+  };
+  if (idx >= 0) db.users[idx] = userObj; else db.users.push(userObj);
+  saveDb(db);
+  STATE = db;
+  $("#tmMsg").innerHTML = '<div class="ok">User roster saved.</div>';
+  renderAdminConsole();
+  populateDropdowns();
+};
+
+$("#admUcSave").onclick = () => {
+  const name = $("#admUcN").value.trim();
+  const steps = $("#admUcS").value.split('\n').map(s => s.trim()).filter(Boolean);
+  if (!name || !steps.length) return alert('Name and steps are required.');
+  const db = getDb();
+  const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+  db.usecases.push({ id, name, category: $("#admUcC").value.trim(), tips: $("#admUcT").value.trim(), steps });
+  saveDb(db);
+  STATE = db;
+  $("#admUcMsg").innerHTML = '<div class="ok">SOP created successfully.</div>';
+  populateDropdowns();
+};
+
+$("#btnSaveQueues").onclick = () => {
+  const qList = $("#admQueueList").value.split('\n').map(s => s.trim()).filter(Boolean);
+  if (!qList.length) return;
+  const db = getDb();
+  db.queues = qList;
+  saveDb(db);
+  STATE = db;
+  $("#queueMsg").innerHTML = '<div class="ok">Queues updated.</div>';
+  populateDropdowns();
+};
+
+function bootstrap() {
+  STATE = getDb();
+  $("#userBadge").innerHTML = `<b>${esc(currentUser.name)}</b> <span class="badge ${currentUser.role==='admin'?'badge-admin':'badge-agent'}">${esc(currentUser.role)}</span>`;
+  if (currentUser.role === 'admin') {
+    $("#adminNavTab").classList.remove('hide');
+    $("#ownBox").classList.remove('hide');
+  } else {
+    $("#adminNavTab").classList.add('hide');
+    $("#ownBox").classList.add('hide');
+  }
+  populateDropdowns();
+  renderAgentDashboard();
+  renderQueue();
+  renderLibrary();
+}
+
+if (currentUser) {
+  $("#loginModal").classList.add('hide');
+  bootstrap();
+} else {
+  $("#loginModal").classList.remove('hide');
+}
+clearForm();
+})();
+</script>
+</body>
+</html>
